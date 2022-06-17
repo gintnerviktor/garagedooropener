@@ -1,0 +1,22 @@
+{
+    "project_name":       "bootloader",
+    "project_path":       "/Users/viktor/esp/esp-idf/components/bootloader/subproject",
+    "build_dir":          "/Users/viktor/esp-homekit-sdk/examples/garagedoor/build/bootloader",
+    "config_file":        "/Users/viktor/esp-homekit-sdk/examples/garagedoor/sdkconfig",
+    "config_defaults":    "",
+    "app_elf":            "bootloader.elf",
+    "app_bin":            "bootloader.bin",
+    "git_revision":       "v5.0-dev-2551-gdd27d351ee-dirty",
+    "target":             "esp32",
+    "rev":                "0",
+    "phy_data_partition": "",
+    "monitor_baud" :      "115200",
+    "monitor_toolprefix": "xtensa-esp32-elf-",
+    "config_environment" : {
+        "COMPONENT_KCONFIGS" : "/Users/viktor/esp/esp-idf/components/efuse/Kconfig;/Users/viktor/esp/esp-idf/components/esp32/Kconfig;/Users/viktor/esp/esp-idf/components/esp_common/Kconfig;/Users/viktor/esp/esp-idf/components/esp_hw_support/Kconfig;/Users/viktor/esp/esp-idf/components/esp_system/Kconfig;/Users/viktor/esp/esp-idf/components/freertos/Kconfig;/Users/viktor/esp/esp-idf/components/hal/Kconfig;/Users/viktor/esp/esp-idf/components/log/Kconfig;/Users/viktor/esp/esp-idf/components/newlib/Kconfig;/Users/viktor/esp/esp-idf/components/spi_flash/Kconfig",
+        "COMPONENT_KCONFIGS_PROJBUILD" : "/Users/viktor/esp/esp-idf/components/bootloader/Kconfig.projbuild;/Users/viktor/esp/esp-idf/components/esp_rom/Kconfig.projbuild;/Users/viktor/esp/esp-idf/components/esptool_py/Kconfig.projbuild;/Users/viktor/esp/esp-idf/components/partition_table/Kconfig.projbuild"
+    },
+    "build_components" : [ "bootloader", "bootloader_support", "efuse", "esp32", "esp_common", "esp_hw_support", "esp_rom", "esp_system", "esptool_py", "freertos", "hal", "log", "main", "micro-ecc", "newlib", "partition_table", "soc", "spi_flash", "xtensa", "" ],
+    "build_component_paths" : [ "/Users/viktor/esp/esp-idf/components/bootloader", "/Users/viktor/esp/esp-idf/components/bootloader_support", "/Users/viktor/esp/esp-idf/components/efuse", "/Users/viktor/esp/esp-idf/components/esp32", "/Users/viktor/esp/esp-idf/components/esp_common", "/Users/viktor/esp/esp-idf/components/esp_hw_support", "/Users/viktor/esp/esp-idf/components/esp_rom", "/Users/viktor/esp/esp-idf/components/esp_system", "/Users/viktor/esp/esp-idf/components/esptool_py", "/Users/viktor/esp/esp-idf/components/freertos", "/Users/viktor/esp/esp-idf/components/hal", "/Users/viktor/esp/esp-idf/components/log", "/Users/viktor/esp/esp-idf/components/bootloader/subproject/main", "/Users/viktor/esp/esp-idf/components/bootloader/subproject/components/micro-ecc", "/Users/viktor/esp/esp-idf/components/newlib", "/Users/viktor/esp/esp-idf/components/partition_table", "/Users/viktor/esp/esp-idf/components/soc", "/Users/viktor/esp/esp-idf/components/spi_flash", "/Users/viktor/esp/esp-idf/components/xtensa", "" ],
+    "debug_prefix_map_gdbinit": ""
+}

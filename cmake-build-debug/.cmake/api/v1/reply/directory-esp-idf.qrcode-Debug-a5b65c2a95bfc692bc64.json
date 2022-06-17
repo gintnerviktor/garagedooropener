@@ -1,0 +1,14 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : [],
+		"nodes" : []
+	},
+	"installers" : [],
+	"paths" : 
+	{
+		"build" : "esp-idf/qrcode",
+		"source" : "/Users/viktor/esp-homekit-sdk/examples/common/qrcode"
+	}
+}

@@ -1,0 +1,63 @@
+/Applications/CLion.app/Contents/bin/cmake/mac/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/Applications/CLion.app/Contents/bin/ninja/mac/ninja -G Ninja -S /Users/viktor/esp-homekit-sdk/examples/garagedoor -B /Users/viktor/esp-homekit-sdk/examples/garagedoor/cmake-build-debug
+-- IDF_TARGET not set, using default target: esp32
+-- Found Git: /usr/bin/git (found version "2.24.3 (Apple Git-128)") 
+-- Component directory /Users/viktor/esp-homekit-sdk/components/homekit does not contain a CMakeLists.txt file. No component will be added
+-- The C compiler identification is GNU 8.4.0
+-- The CXX compiler identification is GNU 8.4.0
+-- The ASM compiler identification is GNU
+-- Found assembler: /Users/viktor/.espressif/tools/xtensa-esp32-elf/esp-2021r2-patch3-8.4.0/xtensa-esp32-elf/bin/xtensa-esp32-elf-gcc
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /Users/viktor/.espressif/tools/xtensa-esp32-elf/esp-2021r2-patch3-8.4.0/xtensa-esp32-elf/bin/xtensa-esp32-elf-gcc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /Users/viktor/.espressif/tools/xtensa-esp32-elf/esp-2021r2-patch3-8.4.0/xtensa-esp32-elf/bin/xtensa-esp32-elf-g++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Project is not inside a git repository, or git repository has no commits; will not use 'git describe' to determine PROJECT_VER.
+-- Building ESP-IDF components for target esp32
+-- Checking Python dependencies...
+Python requirements are satisfied.
+Skipping the download of /Users/viktor/.espressif/espidf.constraints.v5.0.txt because it was downloaded recently. If you believe that this is causing you trouble then remove it manually and re-run your install script.
+Constraint file: /Users/viktor/.espressif/espidf.constraints.v5.0.txt
+Requirement files:
+ - /Users/viktor/esp/esp-idf/tools/requirements/requirements.core.txt
+Python being checked: /Users/viktor/.espressif/python_env/idf5.0_py3.9_env/bin/python
+-- IDF_COMPONENT_MANAGER:1
+Processing 2 dependencies:
+[1/2] espressif/libsodium (1.0.20)
+[2/2] idf (5.0.0)
+-- Project sdkconfig file /Users/viktor/esp-homekit-sdk/examples/garagedoor/sdkconfig
+Loading defaults file /Users/viktor/esp-homekit-sdk/examples/garagedoor/sdkconfig.defaults...
+-- Looking for sys/types.h
+-- Looking for sys/types.h - found
+-- Looking for stdint.h
+-- Looking for stdint.h - found
+-- Looking for stddef.h
+-- Looking for stddef.h - found
+-- Check size of time_t
+-- Check size of time_t - done
+-- Found Python3: /Users/viktor/.espressif/python_env/idf5.0_py3.9_env/bin/python3.9 (found version "3.9.12") found components: Interpreter 
+-- Performing Test C_COMPILER_SUPPORTS_WFORMAT_SIGNEDNESS
+-- Performing Test C_COMPILER_SUPPORTS_WFORMAT_SIGNEDNESS - Success
+-- App "garagedooropener" version: 1
+-- Adding linker script /Users/viktor/esp-homekit-sdk/examples/garagedoor/cmake-build-debug/esp-idf/esp_system/ld/memory.ld
+-- Adding linker script /Users/viktor/esp/esp-idf/components/esp_system/ld/esp32/sections.ld.in
+-- Adding linker script /Users/viktor/esp/esp-idf/components/esp_rom/esp32/ld/esp32.rom.ld
+-- Adding linker script /Users/viktor/esp/esp-idf/components/esp_rom/esp32/ld/esp32.rom.api.ld
+-- Adding linker script /Users/viktor/esp/esp-idf/components/esp_rom/esp32/ld/esp32.rom.libgcc.ld
+-- Adding linker script /Users/viktor/esp/esp-idf/components/esp_rom/esp32/ld/esp32.rom.newlib-data.ld
+-- Adding linker script /Users/viktor/esp/esp-idf/components/esp_rom/esp32/ld/esp32.rom.syscalls.ld
+-- Adding linker script /Users/viktor/esp/esp-idf/components/esp_rom/esp32/ld/esp32.rom.newlib-funcs.ld
+-- Adding linker script /Users/viktor/esp/esp-idf/components/esp_rom/esp32/ld/esp32.rom.newlib-time.ld
+-- Adding linker script /Users/viktor/esp/esp-idf/components/soc/esp32/ld/esp32.peripherals.ld
+fatal: not a git repository (or any of the parent directories): .git
+4.0-
+ESP HomeKit SDK Project commit: HEAD-HASH-NOTFOUND
+-- Components: app_hap_setup_payload app_trace app_update app_wifi asio bootloader bootloader_support bt button cmock console cxx driver efuse esp-tls esp32 esp_adc_cal esp_common esp_eth esp_event esp_gdbstub esp_hap_apple_profiles esp_hap_core esp_hap_extras esp_hap_platform esp_hid esp_http_client esp_http_server esp_https_ota esp_https_server esp_hw_support esp_lcd esp_local_ctrl esp_netif esp_phy esp_pm esp_ringbuf esp_rom esp_serial_slave_link esp_system esp_timer esp_wifi espcoredump espressif__libsodium esptool_py fatfs freertos hal heap hkdf-sha http_parser idf_test ieee802154 json json_generator json_parser log lwip main mbedtls mdns mqtt mu_srp newlib nvs_flash openthread partition_table perfmon protobuf-c protocomm pthread qrcode sdmmc soc spi_flash spiffs tcp_transport tinyusb ulp unity usb vfs wear_levelling wifi_provisioning wpa_supplicant xtensa
+-- Component paths: /Users/viktor/esp-homekit-sdk/examples/common/app_hap_setup_payload /Users/viktor/esp/esp-idf/components/app_trace /Users/viktor/esp/esp-idf/components/app_update /Users/viktor/esp-homekit-sdk/examples/common/app_wifi /Users/viktor/esp/esp-idf/components/asio /Users/viktor/esp/esp-idf/components/bootloader /Users/viktor/esp/esp-idf/components/bootloader_support /Users/viktor/esp/esp-idf/components/bt /Users/viktor/esp-homekit-sdk/components/button /Users/viktor/esp/esp-idf/components/cmock /Users/viktor/esp/esp-idf/components/console /Users/viktor/esp/esp-idf/components/cxx /Users/viktor/esp/esp-idf/components/driver /Users/viktor/esp/esp-idf/components/efuse /Users/viktor/esp/esp-idf/components/esp-tls /Users/viktor/esp/esp-idf/components/esp32 /Users/viktor/esp/esp-idf/components/esp_adc_cal /Users/viktor/esp/esp-idf/components/esp_common /Users/viktor/esp/esp-idf/components/esp_eth /Users/viktor/esp/esp-idf/components/esp_event /Users/viktor/esp/esp-idf/components/esp_gdbstub /Users/viktor/esp-homekit-sdk/components/homekit/esp_hap_apple_profiles /Users/viktor/esp-homekit-sdk/components/homekit/esp_hap_core /Users/viktor/esp-homekit-sdk/components/homekit/esp_hap_extras /Users/viktor/esp-homekit-sdk/components/homekit/esp_hap_platform /Users/viktor/esp/esp-idf/components/esp_hid /Users/viktor/esp/esp-idf/components/esp_http_client /Users/viktor/esp/esp-idf/components/esp_http_server /Users/viktor/esp/esp-idf/components/esp_https_ota /Users/viktor/esp/esp-idf/components/esp_https_server /Users/viktor/esp/esp-idf/components/esp_hw_support /Users/viktor/esp/esp-idf/components/esp_lcd /Users/viktor/esp/esp-idf/components/esp_local_ctrl /Users/viktor/esp/esp-idf/components/esp_netif /Users/viktor/esp/esp-idf/components/esp_phy /Users/viktor/esp/esp-idf/components/esp_pm /Users/viktor/esp/esp-idf/components/esp_ringbuf /Users/viktor/esp/esp-idf/components/esp_rom /Users/viktor/esp/esp-idf/components/esp_serial_slave_link /Users/viktor/esp/esp-idf/components/esp_system /Users/viktor/esp/esp-idf/components/esp_timer /Users/viktor/esp/esp-idf/components/esp_wifi /Users/viktor/esp/esp-idf/components/espcoredump /Users/viktor/esp-homekit-sdk/examples/garagedoor/managed_components/espressif__libsodium /Users/viktor/esp/esp-idf/components/esptool_py /Users/viktor/esp/esp-idf/components/fatfs /Users/viktor/esp/esp-idf/components/freertos /Users/viktor/esp/esp-idf/components/hal /Users/viktor/esp/esp-idf/components/heap /Users/viktor/esp-homekit-sdk/components/homekit/hkdf-sha /Users/viktor/esp/esp-idf/components/http_parser /Users/viktor/esp/esp-idf/components/idf_test /Users/viktor/esp/esp-idf/components/ieee802154 /Users/viktor/esp/esp-idf/components/json /Users/viktor/esp-homekit-sdk/components/homekit/json_generator /Users/viktor/esp-homekit-sdk/components/homekit/json_parser /Users/viktor/esp/esp-idf/components/log /Users/viktor/esp/esp-idf/components/lwip /Users/viktor/esp-homekit-sdk/examples/garagedoor/main /Users/viktor/esp/esp-idf/components/mbedtls /Users/viktor/esp/esp-idf/components/mdns /Users/viktor/esp/esp-idf/components/mqtt /Users/viktor/esp-homekit-sdk/components/homekit/mu_srp /Users/viktor/esp/esp-idf/components/newlib /Users/viktor/esp/esp-idf/components/nvs_flash /Users/viktor/esp/esp-idf/components/openthread /Users/viktor/esp/esp-idf/components/partition_table /Users/viktor/esp/esp-idf/components/perfmon /Users/viktor/esp/esp-idf/components/protobuf-c /Users/viktor/esp/esp-idf/components/protocomm /Users/viktor/esp/esp-idf/components/pthread /Users/viktor/esp-homekit-sdk/examples/common/qrcode /Users/viktor/esp/esp-idf/components/sdmmc /Users/viktor/esp/esp-idf/components/soc /Users/viktor/esp/esp-idf/components/spi_flash /Users/viktor/esp/esp-idf/components/spiffs /Users/viktor/esp/esp-idf/components/tcp_transport /Users/viktor/esp/esp-idf/components/tinyusb /Users/viktor/esp/esp-idf/components/ulp /Users/viktor/esp/esp-idf/components/unity /Users/viktor/esp/esp-idf/components/usb /Users/viktor/esp/esp-idf/components/vfs /Users/viktor/esp/esp-idf/components/wear_levelling /Users/viktor/esp/esp-idf/components/wifi_provisioning /Users/viktor/esp/esp-idf/components/wpa_supplicant /Users/viktor/esp/esp-idf/components/xtensa
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /Users/viktor/esp-homekit-sdk/examples/garagedoor/cmake-build-debug

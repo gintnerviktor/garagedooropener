@@ -1,0 +1,14 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : [],
+		"nodes" : []
+	},
+	"installers" : [],
+	"paths" : 
+	{
+		"build" : "esp-idf/mu_srp",
+		"source" : "/Users/viktor/esp-homekit-sdk/components/homekit/mu_srp"
+	}
+}

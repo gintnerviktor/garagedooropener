@@ -1,0 +1,14 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : [],
+		"nodes" : []
+	},
+	"installers" : [],
+	"paths" : 
+	{
+		"build" : "esp-idf/esp_hap_core",
+		"source" : "/Users/viktor/esp-homekit-sdk/components/homekit/esp_hap_core"
+	}
+}

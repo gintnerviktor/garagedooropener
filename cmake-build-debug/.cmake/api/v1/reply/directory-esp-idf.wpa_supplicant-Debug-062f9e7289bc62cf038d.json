@@ -1,0 +1,14 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : [],
+		"nodes" : []
+	},
+	"installers" : [],
+	"paths" : 
+	{
+		"build" : "esp-idf/wpa_supplicant",
+		"source" : "/Users/viktor/esp/esp-idf/components/wpa_supplicant"
+	}
+}

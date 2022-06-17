@@ -1,0 +1,7 @@
+source "/Users/viktor/esp/esp-idf/components/app_update/Kconfig.projbuild"
+source "/Users/viktor/esp/esp-idf/components/bootloader/Kconfig.projbuild"
+source "/Users/viktor/esp/esp-idf/components/esp_rom/Kconfig.projbuild"
+source "/Users/viktor/esp/esp-idf/components/esptool_py/Kconfig.projbuild"
+source "/Users/viktor/esp/esp-idf/components/partition_table/Kconfig.projbuild"
+source "/Users/viktor/esp-homekit-sdk/examples/garagedoor/main/Kconfig.projbuild"
+source "/Users/viktor/esp-homekit-sdk/examples/common/app_wifi/Kconfig.projbuild"

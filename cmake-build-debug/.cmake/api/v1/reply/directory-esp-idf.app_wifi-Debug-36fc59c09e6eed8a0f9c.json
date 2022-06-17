@@ -1,0 +1,14 @@
+{
+	"backtraceGraph" : 
+	{
+		"commands" : [],
+		"files" : [],
+		"nodes" : []
+	},
+	"installers" : [],
+	"paths" : 
+	{
+		"build" : "esp-idf/app_wifi",
+		"source" : "/Users/viktor/esp-homekit-sdk/examples/common/app_wifi"
+	}
+}
