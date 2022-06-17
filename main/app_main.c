@@ -133,15 +133,8 @@ typedef enum {
     TS_IDLE = 2,
 } tState;
 static tState targetState = TS_IDLE;
+static tState homeKitTargetState = TS_IDLE;
 
-typedef enum {
-    LS_OPEN = 0,
-    LS_CLOSED = 1,
-    LS_IDLE = 2,
-    LS_ERROR = 3
-} lSwitch;
-static lSwitch limitSwitch = LS_CLOSED;
-static lSwitch limitSwitchTemp = LS_CLOSED;
 static int limitSwitchOpenUpCounter = 0;
 static int limitSwitchOpenDownCounter = 0;
 static int limitSwitchCloseUpCounter = 0;
@@ -247,6 +240,10 @@ static int garage_door_opener_write(hap_write_data_t write_data[], int count,
         if (!strcmp(hap_char_get_type_uuid(write->hc), HAP_CHAR_UUID_TARGET_DOOR_STATE)) {
             ESP_LOGI(TAG, "Target door state %d", write->val.i);
 
+            setTargetState(write->val.i);
+            homeKitTargetState = write->val.i;
+            targetStateChanged = true;
+
             switch (currentState) {
                 case CS_FULLY_CLOSED:{
                      /*
@@ -256,7 +253,8 @@ static int garage_door_opener_write(hap_write_data_t write_data[], int count,
                          /*
                           * Beállításra kerülnek a nyitáshoz szükséges paraméterek
                           */
-                         targetState = TS_OPEN;
+                         setTargetState(TS_OPEN);
+                         homeKitTargetState = TS_OPEN;
                          targetStateChanged = true;
                      }
                     break;
@@ -308,6 +306,7 @@ static int garage_door_opener_write(hap_write_data_t write_data[], int count,
                         /*
                          * Beállításra kerülnek a záráshoz szükséges paraméterek
                          */
+
                         targetState = TS_CLOSE;
                         targetStateChanged = true;
                     } else if ( write->val.i == TS_OPEN){
@@ -692,10 +691,30 @@ void app_main()
                 if ( motorDirection != MD_WORK){
                     motorDirection = MD_WORK;
                     ESP_LOGI(TAGSENSOR, "A motorDirection megváltozott! Új érték:MD_WORK");
+                    if ( gateDirection == GD_IDLE_FROM_OPENING){
+                        gateDirection = GD_CLOSING;
+                        setCurrentState(CS_ACTIVELY_CLOSING);
+                        setTargetState(TS_CLOSE);
+                        ESP_LOGI(TAGSENSOR, "A gateDirection megváltozott! Új érték:GD_CLOSING");
+                    } else if (gateDirection == GD_IDLE_FROM_CLOSING) {
+                        gateDirection = GD_OPENING;
+                        setCurrentState(CS_ACTIVELY_OPENING);
+                        setTargetState(TS_OPEN);
+                        ESP_LOGI(TAGSENSOR, "A gateDirection megváltozott! Új érték:GD_OPENING");
+                    }
                 }
             } else {
                 if ( motorDirection != MD_IDLE){
                     motorDirection = MD_IDLE;
+                    if ( gateDirection == GD_OPENING){
+                        gateDirection = GD_IDLE_FROM_OPENING;
+                        setCurrentState(CS_STOPPED);
+                        ESP_LOGI(TAGSENSOR, "A gateDirection megváltozott! Új érték:GD_IDLE_FROM_OPENING");
+                    } else if ( gateDirection == GD_CLOSING){
+                        gateDirection = GD_IDLE_FROM_CLOSING;
+                        setCurrentState(CS_STOPPED);
+                        ESP_LOGI(TAGSENSOR, "A gateDirection megváltozott! Új érték:GD_IDLE_FROM_CLOSING");
+                    }
                     ESP_LOGI(TAGSENSOR, "A motorDirection megváltozott! Új érték:MD_IDLE");
                 }
             }
@@ -759,172 +778,102 @@ void app_main()
                 }
             }
 
-            limitSwitchTemp = limitSwitch;
+
             if ( limitSwitchOpen == true && limitSwitchClose == true){
                 /*
                  * Mindkét kapcsoló zárt állásban van, ez elvileg nem lehetséges...
                  */
-                limitSwitch = LS_ERROR;
+                if ( gateDirection != GD_UNKNOWN){
+                    gateDirection = GD_UNKNOWN;
+                    ESP_LOGI(TAGSENSOR, "A gateDirection megváltozott! Új érték: GD_UNKNOWN");
+                }
             } else if ( limitSwitchOpen == true && limitSwitchClose == false){
                 /*
-                 * A kapu nyitott helyzetű végállásban van.
+                 * A kapu nyitott helyzetű végállásban van, a kérdés, hogy eddig is ebben volt-e?
                  */
-                limitSwitch = LS_OPEN;
+                if ( gateDirection != GD_OPEN){
+                    gateDirection = GD_OPEN;
+                    setTargetState(TS_OPEN);
+                    setCurrentState(CS_FULLY_OPEN);
+                    ESP_LOGI(TAGSENSOR, "A gateDirection megváltozott! Új érték: GD_OPEN");
+                }
             } else if ( limitSwitchOpen == false && limitSwitchClose == true){
                 /*
                  * A kapu zárt helyzetű végállásban van
                  */
-                limitSwitch = LS_CLOSED;
+                if ( gateDirection != GD_CLOSED){
+                    gateDirection = GD_CLOSED;
+                    setTargetState(TS_CLOSE);
+                    setCurrentState(CS_FULLY_CLOSED);
+                    ESP_LOGI(TAGSENSOR, "A gateDirection megváltozott! Új érték: GD_CLOSED");
+                }
             } else {
                 /*
                  * A kapu a végállások között van
                  */
-                limitSwitch = LS_IDLE;
-            }
-
-
-            /*
-             * Ha megváltozott a limit switch, akkor vizsgáljuk...
-             */
-            if ( limitSwitch != limitSwitchTemp){
-                /*
-                 * A limitSwitch értékéből kalkuláljuk a gateDirection-t.
-                 */
-                switch (limitSwitch) {
-                    case LS_ERROR:{
-                        ESP_LOGI(TAGSENSOR, "A limitSwitch megváltozott! Új érték: LS_ERROR");
-                        gateDirection = GD_UNKNOWN;
-                        ESP_LOGI(TAGSENSOR, "A gateDirection megváltozott! Új érték: GD_UNKNOWN");
+                switch (gateDirection) {
+                    // Ha nyitás, vagy zárás közben történt..
+                    case GD_IDLE_FROM_CLOSING:{
                         break;
                     }
-                    case LS_CLOSED:{
-                        /*
-                         * A kapu zárt helyzetbe került
-                         */
-                        ESP_LOGI(TAGSENSOR, "A limitSwitch megváltozott! Új érték: LS_CLOSED");
-                        gateDirection = GD_CLOSED;
-                        ESP_LOGI(TAGSENSOR, "A gateDirection megváltozott! Új érték: GD_CLOSED");
+                    case GD_IDLE_FROM_OPENING:{
                         break;
                     }
-                    case LS_OPEN:{
-                        /*
-                         * A kapu nyitott helyzetbe került
-                         */
-                        ESP_LOGI(TAGSENSOR, "A limitSwitch megváltozott! Új érték: LS_OPEN");
-                        gateDirection = GD_OPEN;
-                        ESP_LOGI(TAGSENSOR, "A gateDirection megváltozott! Új érték: GD_OPEN");
+                    case GD_UNKNOWN:{
                         break;
                     }
-                    case LS_IDLE:{
+                    case GD_OPENING:{
+                        break;
+                    }
+                    case GD_CLOSING:{
+                        break;
+                    }
+                    case GD_OPEN:{
                         /*
-                         * A kapu köztes helyzetbe került
+                         * A kapu eddig nyitva volt és most került köztes helyzetbe, tehát, ha a motor működik,
+                         * akkor zárás van folyamatban, ellenkező esetben középen megállt a kapu.
                          */
-                        ESP_LOGI(TAGSENSOR, "A limitSwitch megváltozott! Új érték: LS_IDLE");
-                        switch (gateDirection) {
-                            // Ha nyitás, vagy zárás közben történt..
-                            case GD_IDLE_FROM_CLOSING:{
-                                break;
-                            }
-                            case GD_IDLE_FROM_OPENING:{
-                                break;
-                            }
-                            case GD_UNKNOWN:{
-                                break;
-                            }
-                            case GD_OPENING:{
-                                break;
-                            }
-                            case GD_CLOSING:{
-                                break;
-                            }
-                            case GD_OPEN:{
-                                /*
-                                 * A kapu eddig nyitva volt és most került köztes helyzetbe, tehát, ha a motor működik,
-                                 * akkor zárás van folyamatban, ellenkező esetben középen megállt a kapu.
-                                 */
-                                if ( motorDirection == MD_WORK){
-                                    gateDirection = GD_CLOSING;
-                                    ESP_LOGI(TAGSENSOR, "A gateDirection megváltozott! Új érték: GD_CLOSING");
-                                } else {
-                                    gateDirection = GD_IDLE_FROM_OPENING;
-                                    ESP_LOGI(TAGSENSOR, "A gateDirection megváltozott! Új érték: GD_IDLE_FROM_OPENING");
-                                }
-                                break;
-                            }
-                            case GD_CLOSED:{
-                                /*
-                                 * A kapu eddig zárva volt és most került köztes helyzetbe, tehát, ha a motor működik,
-                                 * akkor nyitás van folyamatban, ellenkező esetben középen megállt a kapu.
-                                 */
-                                if ( motorDirection == MD_WORK){
-                                    gateDirection = GD_OPENING;
-                                    ESP_LOGI(TAGSENSOR, "A gateDirection megváltozott! Új érték: GD_OPENING");
-                                } else {
-                                    gateDirection = GD_IDLE_FROM_CLOSING;
-                                    ESP_LOGI(TAGSENSOR, "A gateDirection megváltozott! Új érték: GD_IDLE_FROM_CLOSING");
-                                }
-
-                                break;
-                            }
+                        if ( motorDirection == MD_WORK){
+                            /*
+                             * A motor működésben van, ellenőrizzük a targetState-et és currentState-et
+                             */
+                            gateDirection = GD_CLOSING;
+                            setTargetState(TS_CLOSE);
+                            setCurrentState(CS_ACTIVELY_CLOSING);
+                            ESP_LOGI(TAGSENSOR, "A gateDirection megváltozott! Új érték: GD_CLOSING");
+                        } else {
+                            gateDirection = GD_IDLE_FROM_OPENING;
+                            ESP_LOGI(TAGSENSOR, "A gateDirection megváltozott! Új érték: GD_IDLE_FROM_OPENING");
+                            /*
+                             * A kapu a végpontok között áll!
+                             */
+                            setCurrentState(CS_STOPPED);
                         }
                         break;
                     }
-                }
-
-                /*
-                 * Változott a limitSwitch értéke, ezért a targetState-et is változtatjuk, ha kell.
-                 */
-                if ( limitSwitch == LS_IDLE){
-                    if ( limitSwitchTemp == LS_CLOSED){
+                    case GD_CLOSED:{
                         /*
-                         * A kapu zárt állapotból köztes állapotba került, tehát nyitás van folyamatban
+                         * A kapu eddig zárva volt és most került köztes helyzetbe, tehát, ha a motor működik,
+                         * akkor nyitás van folyamatban, ellenkező esetben középen megállt a kapu.
                          */
-                        setTargetState(TS_OPEN);
-                        setCurrentState(CS_ACTIVELY_OPENING);
-                    } else if (limitSwitchTemp == LS_OPEN){
-                        /*
-                         * A kapu nyitott állapotból köztes állapotba került, tehát zárás van folyamatban
-                         */
-                        setTargetState(TS_CLOSE);
-                        setCurrentState(CS_ACTIVELY_CLOSING);
+                        if ( motorDirection == MD_WORK){
+                            /*
+                             * A motor működésben van, ellenőrizzük a targetState-et és currentState-et
+                             */
+                            gateDirection = GD_OPENING;
+                            setTargetState(TS_OPEN);
+                            setCurrentState(CS_ACTIVELY_OPENING);
+                            ESP_LOGI(TAGSENSOR, "A gateDirection megváltozott! Új érték: GD_OPENING");
+                        } else {
+                            gateDirection = GD_IDLE_FROM_CLOSING;
+                            ESP_LOGI(TAGSENSOR, "A gateDirection megváltozott! Új érték: GD_IDLE_FROM_CLOSING");
+                            /*
+                             * A kapu a végpontok között áll!
+                             */
+                            setCurrentState(CS_STOPPED);
+                        }
+                        break;
                     }
-                } else if ( limitSwitch == LS_CLOSED){
-                    /*
-                     * A kapu nyitott állapotból, vagy köztes állapotból zártba került, tehát zárás van folyamatban
-                     */
-                    setTargetState(TS_CLOSE);
-                    setCurrentState(CS_FULLY_CLOSED);
-                } else if ( limitSwitch == LS_OPEN){
-                    /*
-                     * A kapu zárt állapotból, vagy köztes állapotból nyitottba került, tehát nyitás van folyamatban
-                     */
-                    setTargetState(TS_OPEN);
-                    setCurrentState(CS_FULLY_OPEN);
-                }
-            }
-
-            if ( limitSwitch == LS_IDLE){
-                /*
-                 * A kapu köztes állapotban van, de a gateDirection irányból tudjuk a pillanatnyi irányt
-                 */
-                if ( gateDirection == GD_IDLE){
-                    /*
-                     * A kapu a végpontok között áll!
-                     */
-                    setCurrentState(CS_STOPPED);
-                } else if ( gateDirection == GD_OPENING){
-                    /*
-                     * A gateDirection szerint nyitás irány van, ellenőrizzük a targetState-et és currentState-et
-                     */
-                    setTargetState(TS_OPEN);
-                    setCurrentState(CS_ACTIVELY_OPENING);
-
-                } else if ( gateDirection == GD_CLOSING){
-                    /*
-                     * A gateDirection szerint zárás irány van, ellenőrizzük a targetState-et és currentState-et
-                     */
-                    setTargetState(TS_CLOSE);
-                    setCurrentState(CS_ACTIVELY_CLOSING);
                 }
             }
 
@@ -976,7 +925,8 @@ void app_main()
                     }
                 }
                 relayTimerCount = 0;
-            } else {
+            }
+            else {
                 relayTimerCount++;
 
                 switch (relayStatus) {
@@ -995,6 +945,7 @@ void app_main()
                         }
                         break;
                     }
+
                     case RS_MEGALLIT_IMPULZUS_STEP2:{
                         relay1_set_on(true);
                         if ( relayTimerCount >= 10 ){
@@ -1003,10 +954,16 @@ void app_main()
                              */
                             relay1_set_on(false);
                             relayTimerCount = 0;
+
+                            /*
+                             * Ellenőrizni kell, hogy a megfelelő irányba halad-e a kapu
+                             */
+                            if ( )
                             relayStatus = RS_VARAKOZAS_STEP3;
                         }
                         break;
                     }
+
                     case RS_VARAKOZAS_STEP3:{
                         if ( relayTimerCount >= 10 ){
                             /*
@@ -1017,6 +974,7 @@ void app_main()
                         }
                         break;
                     }
+
                     case RS_INDIT_IMPULZUS_STEP4:{
                         relay1_set_on(true);
                         if ( relayTimerCount >= 10 ){
@@ -1025,57 +983,12 @@ void app_main()
                              */
                             relay1_set_on(false);
                             relayTimerCount = 0;
-                            relayStatus = RS_VARAKOZAS_STEP5;
+                            relayStatus = RS_IDLE;
                         }
                         break;
                     }
-                    case RS_VARAKOZAS_STEP5:{
-                        if ( relayTimerCount >= 10 ){
-                            /*
-                             * Eltelt 1 másodperc, meg kell vizsgálni, hogy a kapu elérte-e a cél állapotot, vagy a
-                             * motor megfelelő irányban mozgaja-e a kaput.
-                             */
-                            relayTimerCount = 0;
 
-                            switch (targetState) {
-                                case TS_OPEN:{
-                                    // NYITAS parancs van érvényben
-                                    if ( gateDirection == GD_OPEN){
-                                        // A Kapu nyitva van, nem kell tenni semmit
-                                    } else if ( gateDirection == GD_OPENING ){
-                                        // A kapu mozgásban van nyitás irányban, nem kell tenni semmit!
-                                    } else if ( gateDirection == GD_CLOSING){
-                                        // A kapu zárás irányban mozog, le kell állítani és meg kell fordítani az irányt
-                                        relayStatus = RS_MEGALLIT_IMPULZUS_STEP6;
-                                    } else {
-                                        // A kapu nincs mozgásban és nincs a megfelelő végállásban sem, ez hiba!
-                                        // TODO
-                                    };
-                                    break;
-                                }
-                                case TS_CLOSE:{
-                                    // ZÁRÁS parancs van érvényben
-                                    if ( gateDirection == GD_CLOSED){
-                                        // A Kapu zárva van, nem kell tenni semmit
-                                    } else if ( gateDirection == GD_CLOSING ){
-                                        // A kapu mozgásban van zárás irányban, nem kell tenni semmit!
-                                    } else if ( gateDirection == GD_OPENING){
-                                        // A kapu nyitás irányban mozog, le kell állítani és meg kell fordítani az irányt
-                                        relayStatus = RS_MEGALLIT_IMPULZUS_STEP6;
-                                    } else {
-                                        // A kapu nincs mozgásban és nincs a megfelelő végállásban sem, ez hiba!
-                                        // TODO
-                                    };
-                                    break;
-                                }
-                                case TS_IDLE:{
-                                    break;
-                                }
-                            }
-                        }
-                        break;
-                    }
-                    case RS_MEGALLIT_IMPULZUS_STEP6:{
+                    case RS_INDIT_IMPULZUS_STEP5:{
                         relay1_set_on(true);
                         if ( relayTimerCount >= 10 ){
                             /*
@@ -1083,77 +996,7 @@ void app_main()
                              */
                             relay1_set_on(false);
                             relayTimerCount = 0;
-                            relayStatus = RS_VARAKOZAS_STEP7;
-                        }
-                        break;
-                    }
-                    case RS_VARAKOZAS_STEP7:{
-                        if ( relayTimerCount >= 10 ){
-                            /*
-                             * Eltelt 1 másodperc
-                             */
-                            relayTimerCount = 0;
-                            relayStatus = RS_INDIT_IMPULZUS_STEP8;
-                        }
-                        break;
-                    }
-                    case RS_INDIT_IMPULZUS_STEP8:{
-                        relay1_set_on(true);
-                        if ( relayTimerCount >= 10 ){
-                            /*
-                             * Eltelt 1 másodperc, relét lekapcsol.
-                             */
-                            relay1_set_on(false);
-                            relayTimerCount = 0;
-                            relayStatus = RS_VARAKOZAS_STEP9;
-                        }
-                        break;
-                    }
-                    case RS_VARAKOZAS_STEP9:{
-                        if ( relayTimerCount >= 10 ){
-                            /*
-                             * Eltelt 1 másodperc
-                             */
-                            relayTimerCount = 0;
-                            relayStatus = RS_TESZT_STEP10;
-                        }
-                        break;
-                    }
-                    case RS_TESZT_STEP10:{
-                        switch (targetState) {
-                            case TS_OPEN:{
-                                // NYITAS parancs van érvényben
-                                if ( gateDirection == GD_OPEN){
-                                    // A Kapu nyitva van, nem kell tenni semmit
-                                } else if ( gateDirection == GD_OPENING ){
-                                    // A kapu mozgásban van nyitás irányban, nem kell tenni semmit!
-                                } else if ( gateDirection == GD_CLOSING){
-                                    // A kapu zárás irányban mozog, ez hiba!
-                                    // TODO
-                                } else {
-                                    // A kapu nincs mozgásban és nincs a megfelelő végállásban sem, ez hiba!
-                                    // TODO
-                                };
-                                break;
-                            }
-                            case TS_CLOSE:{
-                                // ZÁRÁS parancs van érvényben
-                                if ( gateDirection == GD_CLOSED){
-                                    // A Kapu zárva van, nem kell tenni semmit
-                                } else if ( gateDirection == GD_CLOSING ){
-                                    // A kapu mozgásban van zárás irányban, nem kell tenni semmit!
-                                } else if ( gateDirection == GD_OPENING){
-                                    // A kapu nyitás irányban mozog, ez hiba!
-                                    // TODO
-                                } else {
-                                    // A kapu nincs mozgásban és nincs a megfelelő végállásban sem, ez hiba!
-                                    // TODO
-                                };
-                                break;
-                            }
-                            case TS_IDLE:{
-                                break;
-                            }
+                            relayStatus = RS_IDLE;
                         }
                         break;
                     }

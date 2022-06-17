@@ -31,7 +31,7 @@ void relays_init(void)
  */
 int relay1_set_on(bool value)
 {
-    ESP_LOGI(TAG, "relay1_set_on : %s", value == true ? "true" : "false");
+    //ESP_LOGI(TAG, "relay1_set_on : %s", value == true ? "true" : "false");
 
     if ( value){
         gpio_set_level(LED1, 1);
